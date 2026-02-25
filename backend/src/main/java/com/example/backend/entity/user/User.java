@@ -32,8 +32,14 @@ public class User {
 
     private String emailVerificationToken;
 
+    private String refreshToken;
+
     public void verifyEmail() {
         this.isEmailVerified = true;
         this.emailVerificationToken = null;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
