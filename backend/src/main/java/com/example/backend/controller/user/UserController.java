@@ -31,7 +31,7 @@ public class UserController {
 
     @GetMapping("/verify")
     @Operation(summary = "이메일 인증", description = "이메일로 전송된 토큰을 확인하여 계정을 활성화합니다.")
-    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
         userService.verifyEmail(token);
         return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
     }
