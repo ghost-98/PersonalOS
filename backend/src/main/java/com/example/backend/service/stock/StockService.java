@@ -87,6 +87,33 @@ public class StockService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 내 주식 등록 또는 수정
+     */
+    @Transactional
+    public void registerOrUpdateStock(String username, UserStockRequest request) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+
+        // 이미 해당 주식이 등록되어 있는지 확인
+        userStockRepository.findByUserAndStockCode(user, request.getStockCode())
+                .ifPresentOrElse(
+                        // 주식이 있으면 정보 업데이트
+                        userStock -> userStock.updateInfo(request.getAveragePrice(), request.getQuantity()),
+                        // 주식이 없으면 새로 등록
+                        () -> {
+                            UserStock newUserStock = UserStock.builder()
+                                    .user(user)
+                                    .stockCode(request.getStockCode())
+                                    .stockName(getStockNameByCode(request.getStockCode())) // 종목명은 코드를 기반으로 가져옴
+                                    .averagePrice(request.getAveragePrice())
+                                    .quantity(request.getQuantity())
+                                    .build();
+                            userStockRepository.save(newUserStock);
+                        }
+                );
+    }
+
     @Transactional
     public void deleteStock(String username, String stockCode) {
         User user = userRepository.findByUsername(username)
